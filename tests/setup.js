@@ -2,31 +2,66 @@ const { Sequelize, DataTypes } = require("sequelize");
 const path = require('path');
 const { sequelize } = require("../db_credentials");
 
-// Import Sequelize models
-const UserModel = require(path.join(__dirname, '..', 'schema', 'user.js'));
-const GroupModel = require(path.join(__dirname, '..', 'schema', 'group.js'));
-const GroupMembersModel = require(path.join(__dirname, '..', 'schema', 'Group_members.js'));
-const InvitationsModel = require(path.join(__dirname, '..', 'schema', 'invitations.js'));
-const DiscussionsModel = require(path.join(__dirname, '..', 'schema', 'discussions.js'));
-const CommentsModel = require(path.join(__dirname, '..', 'schema', 'comments.js'));
-const NotificationsModel = require(path.join(__dirname, '..', 'schema', 'notifications.js'));
+const Group_members = require("../schema/Group_members");
+const Comments = require("../schema/comments");
+const Discussions = require("../schema/discussions");
+const Group = require("../schema/group");
+const Invitations = require("../schema/invitations");
+const Notifications = require("../schema/notifications");
+const User = require("../schema/user");
 
-// Initialize Sequelize models
-const User = UserModel(sequelize, DataTypes);
-const Group = GroupModel(sequelize, DataTypes)
-const GroupMembers = GroupMembersModel(sequelize, DataTypes)
-const Invitations = InvitationsModel(sequelize, DataTypes)
-const Discussions = DiscussionsModel(sequelize, DataTypes)
-const Comments = CommentsModel(sequelize, DataTypes)
-const Notifications = NotificationsModel(sequelize, DataTypes)
-
+// Define associations
+const defineAssociations = () => {
+    User.hasMany(Group_members, { foreignKey: 'user_id' });
+    User.hasMany(Discussions, { foreignKey: 'author_id' });
+    User.hasMany(Comments, { foreignKey: 'author_id' });
+    User.hasMany(Invitations, { as: 'SentInvitations', foreignKey: 'sender_id' });
+    User.hasMany(Invitations, { as: 'ReceivedInvitations', foreignKey: 'receiver_id' });
+    User.hasMany(Notifications, { as: 'SentNotifications', foreignKey: 'sender_id' });
+    User.hasMany(Notifications, { as: 'ReceivedNotifications', foreignKey: 'receiver_id' });
+    Group.belongsTo(User, { foreignKey: 'creator_id' });
+    Group.hasMany(Group_members, { foreignKey: 'group_id' });
+    Group.hasMany(Discussions, { foreignKey: 'group_id' });
+    Group_members.belongsTo(Group, { foreignKey: 'group_id' });
+    Group_members.belongsTo(User, { foreignKey: 'user_id' });
+    Discussions.belongsTo(User, { foreignKey: 'author_id' });
+    Discussions.belongsTo(Group, { foreignKey: 'group_id' });
+    Discussions.hasMany(Comments, { foreignKey: 'discussion_id' });
+    Comments.belongsTo(User, { foreignKey: 'author_id' });
+    Comments.belongsTo(Discussions, { foreignKey: 'discussion_id' });
+    Notifications.belongsTo(User, { as: 'Sender', foreignKey: 'sender_id' });
+    Notifications.belongsTo(User, { as: 'Receiver', foreignKey: 'receiver_id' });
+    Invitations.belongsTo(User, { as: 'Sender', foreignKey: 'sender_id' });
+    Invitations.belongsTo(User, { as: 'Receiver', foreignKey: 'receiver_id' });
+    Invitations.belongsTo(Group, { foreignKey: 'group_id' });
+  };
+  
+  // Call the function to define associations
+  defineAssociations();
+  
+  
+  // Sync the models with the database
+  (async () => {
+    try {
+      await User.sync();
+      await Group.sync();
+      await Group_members.sync();
+      await Discussions.sync();
+      await Comments.sync();
+      await Invitations.sync();
+      await Notifications.sync();
+      console.log('Models synced with the database successfully.');
+    } catch (error) {
+      console.error('Error syncing models with the database:', error);
+    }
+  })();
 // Export the database connection and models
 module.exports = {
     sequelize,
     models: {
         User,
         Group,
-        GroupMembers,
+        Group_members,
         Invitations,
         Discussions,
         Comments,

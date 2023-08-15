@@ -2,7 +2,7 @@ console.log('Loading environment variables...');
 require('dotenv').config()
 const { Sequelize } = require("sequelize");
 
-const environment = "test"
+const environment = "development" 
 const config = require('./config/config.json')[environment]
 
 // Determine the database name based on the environment

@@ -7,9 +7,7 @@ const path = require('path')
 const { isUser } = require('../middleware/auth')
 const generateAuthToken = require('../utils/generatedAuthToken')
 const { Op } = require('sequelize')
-const { models } = require('../schema')
-
-const User = models.User
+const { User } = require('../models')
 
 // Configure Multer to save uploaded files to a designated folder
 const storage = multer.diskStorage({
@@ -138,6 +136,7 @@ router.post('/login', async (req, res) => {
             token
         })
     } catch (error) {
+        console.error("Error loggin in", error)
         res.status(500).json({
             message: 'An error occured', error
         })
