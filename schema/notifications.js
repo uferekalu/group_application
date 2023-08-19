@@ -24,6 +24,9 @@ const Notifications = sequelize.define('Notifications', {
     content: {
       type: DataTypes.TEXT
     },
+    status: {
+      type: DataTypes.TEXT
+    },
     timestamp: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW
@@ -36,6 +39,8 @@ const Notifications = sequelize.define('Notifications', {
   Notifications.associate = (models) => {
     Notifications.belongsTo(models.User, { as: 'Sender', foreignKey: 'sender_id' });
     Notifications.belongsTo(models.User, { as: 'Receiver', foreignKey: 'receiver_id' });
+    Notifications.belongsTo(models.Group, { foreignKey: 'group_id' });
+    Notifications.belongsTo(models.Discussions, { foreignKey: 'discussion_id' });
   };
   
   module.exports = Notifications;

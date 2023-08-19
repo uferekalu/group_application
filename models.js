@@ -27,6 +27,8 @@ const defineAssociations = () => {
   Comments.belongsTo(Discussions, { foreignKey: 'discussion_id' });
   Notifications.belongsTo(User, { as: 'Sender', foreignKey: 'sender_id' });
   Notifications.belongsTo(User, { as: 'Receiver', foreignKey: 'receiver_id' });
+  Notifications.belongsTo(Group, { foreignKey: 'group_id' });
+  Notifications.belongsTo(Discussions, { foreignKey: 'discussion_id' });
   Invitations.belongsTo(User, { as: 'Sender', foreignKey: 'sender_id' });
   Invitations.belongsTo(User, { as: 'Receiver', foreignKey: 'receiver_id' });
   Invitations.belongsTo(Group, { foreignKey: 'group_id' });

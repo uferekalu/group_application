@@ -13,7 +13,10 @@ const generateAuthToken = (user) => {
             sex: user.sex,
             hobbies: user.hobbies,
         },
-        jwtSecretKey
+        jwtSecretKey,
+        {
+            expiresIn: '1d'
+        }
     )
 
     return token
